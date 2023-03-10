@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EmployeeRequest;
+
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -34,8 +37,10 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employee.create');
-
+        return view('employee.create')
+        ->with([
+            'branches' => Branch::all(),
+        ]);
     }
 
     /**
@@ -82,10 +87,14 @@ class EmployeeController extends Controller
      * @param  \App\Models\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Employee $employee)
+    public function update(Request $employeeRequest, Employee $employee)
     {
         //
+        if ($employee->update($employeeRequest->except(['_token', '_method']))) {
+            return redirect()->route('employee.index');
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

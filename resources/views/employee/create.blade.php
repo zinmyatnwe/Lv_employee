@@ -1,50 +1,41 @@
 @extends('layouts.app_master')
+
 @section('content')
-<main class="content">
-    <div class="container-fluid p-0">
+    @auth
+        <h3 class="mt-3">Create Employee</h3>
 
-        <h1 class="h3 mb-3">Employee Information</h1>
-        <div class="row">
-          <div class="col-md-2 ms-auto">
-            <a href="{{route('employee.index')}}" class="btn btn-dark">Back</a>
-          </div>
-        </div>
-              
-            
-                <form action="{{route('employee.store')}} " method="post">
+        <a href="{{ route('employee.index') }}" class="btn btn-dark">Back</a>
+
+        <div class=" w-50 mx-auto mt-3">
+            <div>
+                <form action="{{ route('employee.store') }}" method="post">
                     @csrf
-                
-                    <div class="row">
-                    <div class="col-md-6">
-
-                        <div class="form-floating mb-3">
-                            <input type="text" name="name" id="" placeholder="Your Full Name" class="form-control" value="{{old('name')}}">
-                            <label for="flotingInput">Your Full Name</label>
-                            @error('name')
-                            <span class="text-danger">{{$message}}</span>
-                                
-                            @enderror
-                        </div>
-                     
-                   
-                    <input type="text" name="branch_id" id="" value="{{ auth()->user()->branch_id }}" hidden>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <button class="btn btn-dark">ADD</button>
-
-                        </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="form-label">Employee Name</label>
+                        <input type="text" name="name" id=""
+                            class="form-control @if ($errors->has('name')) border border-danger @endif"
+                            placeholder="Enter Employee Name" value="{{ old('name') }}">
+                        @if ($errors->has('name'))
+                            <small class="text-danger">{{ $errors->first('name') }}</small>
+                        @endif
                     </div>
-                   
+
+                    @if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Manager')
+                        <div class="form-group">
+                            <label for="" class="form-label">Branch Name</label>
+                            <select name="branch_id" id="" class="form-control mb-3">
+                                <option value="0">Choose Branch</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}">{{ $branch->branch_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @else
+                        <input type="text" name="branch_id" id="" value="{{ auth()->user()->branch_id }}" hidden>
+                    @endif
+                    <button type="submit" class="btn btn-dark">Create</button>
                 </form>
             </div>
-
-
-    
-
-    </div>
-</main>
+        </div>
+    @endauth
 @endsection
-
-    
-
-
